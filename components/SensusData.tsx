@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from "react";
@@ -29,13 +30,35 @@ ChartJS.register(
   ArcElement
 );
 
+interface Annotations {
+  source_name: string;
+  source_description: string;
+  dataset_name: string;
+  dataset_link: string;
+  table_id: string;
+  topic: string;
+  subtopic: string;
+}
+
+interface SourceItem {
+  measures: string[];
+  annotations: Annotations;
+  name: string;
+  substitutions: any[];
+}
+
 interface SensusData {
   Year: string;
   Population: number;
 }
 
+interface SourceData {
+  source: SourceItem[];
+}
+
 const SensusData = () => {
   const [data, setData] = useState<SensusData[]>([]);
+  const [source, setSource] = useState<SourceItem | null>(null);
   const [filteredData, setFilteredData] = useState<SensusData[]>([]);
   const [startYear, setStartYear] = useState<string>("");
   const [endYear, setEndYear] = useState<string>("");
@@ -43,14 +66,17 @@ const SensusData = () => {
   const [loadingReset, setLoadingReset] = useState<boolean>(false);
 
   const getData = async () => {
-    const url = "https://datausa.io/api/data?drilldowns=Nation&measures=Population";
+    const url =
+      "https://datausa.io/api/data?drilldowns=Nation&measures=Population";
     try {
       const response = await axios.get(url);
       const sortedData = response.data.data.sort(
         (a: SensusData, b: SensusData) => parseInt(a.Year) - parseInt(b.Year)
       );
+      console.log("data hasil", response.data.source);
       setData(sortedData);
       setFilteredData(sortedData);
+      setSource(response.data.source[0]);
     } catch (error) {
       console.error("Error fetch data:", error);
     }
@@ -77,7 +103,7 @@ const SensusData = () => {
     setLoadingReset(true);
     setStartYear("");
     setEndYear("");
-    setFilteredData(data); 
+    setFilteredData(data);
     setTimeout(() => {
       setLoadingReset(false);
     }, 1000);
@@ -112,7 +138,6 @@ const SensusData = () => {
           "rgba(255,206,86,0.6)",
           "rgba(75,192,192,0.6)",
           "rgba(153,102,255,0.6)",
-          
         ],
         borderWidth: 1,
       },
@@ -140,10 +165,18 @@ const SensusData = () => {
 
   return (
     <section>
-      <div className="text-center mb-5">
-        <h1 className="text-3xl font-bold text-black/90">Sensus Data</h1>
-        <p className="text-gray-600">The American Community Survey (ACS)</p>
-      </div>
+      {source && (
+        <div className="text-center mb-5">
+          <h1 className="text-3xl font-bold text-black/90">
+            {source.annotations.source_name}
+          </h1>
+          <div className="w-full flex items-center justify-center">
+            <p className="text-gray-600">
+              {source.annotations.source_description}
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="my-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
@@ -162,22 +195,32 @@ const SensusData = () => {
           />
 
           <div className="flex gap-4">
-          <Button title="Filter" onClick={handleFilter} loading={loading} />
-          <Button title="Reset" onClick={handleReset} loading={loadingReset} bg ="bg-[#175f5f]" bgHover="bg-[#184b50]"/>
+            <Button title="Filter" onClick={handleFilter} loading={loading} />
+            <Button
+              title="Reset"
+              onClick={handleReset}
+              loading={loadingReset}
+              bg="bg-[#175f5f]"
+              bgHover="bg-[#184b50]"
+            />
           </div>
         </div>
       </div>
 
       <div className="md:flex gap-6">
         <Card className="my-8  md:w-1/2 p-4 h-[400px]">
-          <h2 className="text-xl font-semibold text-black/80">Populasi Pertahun</h2>
+          <h2 className="text-xl font-semibold text-black/80">
+            Populasi Pertahun
+          </h2>
           <div className="md:w-full max-w-2xl mx-auto p-4">
             <Line data={lineChartData} />
           </div>
         </Card>
 
         <Card className="my-8  md:w-1/2 p-4 h-[400px] ">
-          <h2 className="text-xl font-semibold text-black/80">Populasi Pertahun</h2>
+          <h2 className="text-xl font-semibold text-black/80">
+            Populasi Pertahun
+          </h2>
           <div className="md:w-full max-w-2xl mx-auto p-4 h-[350px] flex items-center justify-center">
             <Pie data={pieChartData} options={pieChartOptions} />
           </div>
