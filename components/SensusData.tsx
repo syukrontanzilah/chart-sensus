@@ -141,7 +141,7 @@ const SensusData = () => {
   return (
     <section>
       <div className="text-center mb-5">
-        <h1 className="text-3xl font-bold">Sensus Data</h1>
+        <h1 className="text-3xl font-bold text-black/90">Sensus Data</h1>
         <p className="text-gray-600">The American Community Survey (ACS)</p>
       </div>
 
@@ -170,14 +170,14 @@ const SensusData = () => {
 
       <div className="md:flex gap-6">
         <Card className="my-8  md:w-1/2 p-4 h-[400px]">
-          <h2 className="text-xl font-semibold">Populasi Pertahun</h2>
+          <h2 className="text-xl font-semibold text-black/80">Populasi Pertahun</h2>
           <div className="md:w-full max-w-2xl mx-auto p-4">
             <Line data={lineChartData} />
           </div>
         </Card>
 
         <Card className="my-8  md:w-1/2 p-4 h-[400px] ">
-          <h2 className="text-xl font-semibold">Populasi Pertahun</h2>
+          <h2 className="text-xl font-semibold text-black/80">Populasi Pertahun</h2>
           <div className="md:w-full max-w-2xl mx-auto p-4 h-[350px] flex items-center justify-center">
             <Pie data={pieChartData} options={pieChartOptions} />
           </div>
